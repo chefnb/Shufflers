@@ -1,0 +1,155 @@
+	$(document).ready(function(){         // GUI setup
+ $( "#accordion" ).accordion({
+	collapsible: true,
+        autoHeight: false,
+	navigation: false
+            });
+
+
+
+ $( "#interaction" ).button({
+            icons: { primary: "ui-icon-power"  },
+            text: false,
+            width: 30
+          
+        });
+ $( "#noise" ).button({
+            icons: { primary: "ui-icon-power"  },
+            text: false,
+            width: 30
+        });
+
+                 
+                    
+
+$.each(anchoring_button, function(key) { 
+  anchoring_button[key].init(); 
+//  alert($(this).attr("value"));
+
+});
+
+
+
+
+//$(".anchoring_btn").click(function() {
+//        alert('Handler called');
+//      });
+
+
+$("#sound").hide();
+	
+});
+
+var anchoring_button={
+   "right": new AnchoringButton("#right"),
+   "bottom":new AnchoringButton("#bottom"),
+   "left": new AnchoringButton("#left"),
+   "top":new AnchoringButton("#top")
+};
+   
+
+function anchoringBtnPressed(key) {
+ anchoring_button[key].step(); 
+
+}
+
+// -------------ANCHORING BUTTON CLASS ------------
+function AnchoringButton (id) {
+    this.id;
+    this.bcSet="none";
+    this.init = function() { // constructor
+      this.id=id;
+      $(id).button({
+           icons: { primary: "ui-icon-help"  },
+           
+            text: false,           
+            width: 30
+      });
+
+     
+    }
+  
+    this.step = function() {
+    alert("received at "+this.id);
+      switch(this.bcSet)
+      {
+      case "none":
+        this.bcSet="perp"
+      case "perp":
+        this.bcSet="para"
+      case "para":
+        this.bcSet="none"
+      };
+    }
+
+}
+//--------------------------------
+
+
+var p;
+var noise_on=false;
+var interactions_on=false;
+
+//  Calls from Processing
+
+function toggleSound(muzak_on){
+ if (muzak_on) $("#sound").show(); else $("#sound").hide();
+
+  }
+
+
+//  Calls to Processing
+
+function wipe(){
+ if (!p)  p = Processing.getInstanceById('pde');  
+
+p.wipe();
+  }
+
+function interactionToggle(){
+
+ if (!p)  p = Processing.getInstanceById('pde');  
+
+ if (!interactions_on) {
+   p.toggleEngine("on");
+  
+   interactions_on=true;
+   $("#interaction_monitor").css('background-color', 'red');
+   p.toggleInteractions("on");
+   
+   } else {
+
+    interactions_on=false;
+   $("#interaction_monitor").css('background-color', 'white');
+   p.toggleInteractions("off");
+   
+   if (!noise_on)  p.toggleEngine("off");
+  
+
+   }
+
+}
+
+function noiseToggle(){
+
+ if (!p)  p = Processing.getInstanceById('pde');  
+
+ if (!noise_on) {
+    p.toggleEngine("on");
+  
+   noise_on=true;
+   $("#noise_monitor").css('background-color', 'red');
+   p.toggleNoise("on");
+   
+   } else {
+  
+    noise_on=false;
+   $("#noise_monitor").css('background-color', 'white');
+   p.toggleNoise("off");
+
+ if (!interactions_on)  p.toggleEngine("off");
+  
+   }
+  
+}
+

@@ -1,0 +1,133 @@
+
+<html>
+   <head>   
+
+
+
+<script src="js/processing-1.0.0.min.js"></script>
+
+<!--script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script-->
+<script src="js/jquery.min.js"></script>
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/mint-choc/jquery-ui.css" rel="stylesheet" type="text/css">
+<!--script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"--></script>
+<script src="js/jquery-ui.min.js"></script>
+
+	
+<style>
+body{
+background-color:black;
+color:white;
+font-family:"Courier new";
+
+width: 700;
+margin : 40; 
+
+}
+#contact{font-size:0.875em; padding:30}
+
+#curtain{ display:none;}
+
+
+#yellowpane
+{  width:320px;
+ padding: 16px; margin: 8px 0px; background-color: 
+#604532; border: 2px solid #cca; }
+
+
+.monitor{  
+   background-color: transparent; 
+   width: 10px; 
+   height: 10px;
+   margin: 10px; 
+}
+
+</style>
+
+<script src="js/main.js"></script>
+
+
+</head>
+
+<body>
+<div id="loading">
+Loading...</br>
+</div>
+
+
+<div id="curtain">
+<p>
+<h1>&nbsp&nbsp SHUFFLERS WITH OBSTACLES</h1>
+
+
+<table cellpadding="10"><tr>
+
+<!--PROCESSING CANVAS -->
+<td> 
+<canvas id="pde" data-processing-sources="pjs/pjs.pde pjs/ObstaclePopulation.pde pjs/ShufflerPopulation.pde" ></canvas>  
+</td>
+
+<!--CONTROL PANEL -->
+<td>
+
+ <div id="yellowpane">
+ 
+   <table>
+    <tr>
+    
+      <!-- obstacle avoidance on/off -->
+      <td>
+       <div class="monitor" id="monitor_light1"></div>
+      </td>
+
+      <td>
+       <button id="toggle1" onclick="Toggle1()"> </button>
+      </td>
+
+      <td> 
+       <font color="white"> &nbsp;obstacle avoidance</color>
+      </td>
+     </tr>
+  
+  <!-- own-species avoidance on/off -->
+    
+     <tr>
+      <td>
+       <div class="monitor" id="monitor_light2"></div>
+      </td>
+    
+      <td>
+       <button id="toggle2" onclick="Toggle2()"></button>
+      </td>
+
+      <td> 
+       <font color="white"> &nbsp;actor-actor avoidance</font>
+      </td>
+     </tr>
+
+ <!-- shuffle rate -->
+ 
+<tr>
+      <td colspan="2">
+     
+       <div id="rate"></div>
+      </td>
+
+      <td> 
+       <font color="white"> &nbsp;shuffle rate</font>
+      </td>
+     </tr>
+
+  </table>
+
+ </div>
+   
+
+</td></tr></table>
+
+  </body>
+
+<div id="contact">
+(c) Nick Braun, 2010
+</div>
+</div>
+</html>

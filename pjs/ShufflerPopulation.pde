@@ -1,0 +1,224 @@
+class ShufflerPopulation {
+    
+  Shuffler[] shufflers;
+  float depth=width/1.8;
+  int density;    
+  float footLength=5;
+  float rate=0.5;
+  boolean obstaclesAvoid=false;
+  boolean ownSpeciesAvoid=false;
+   	 
+
+
+   ShufflerPopulation(int density){ 
+	
+    this.density=density;
+    shufflers = new Shuffler[density];
+         
+    for (int i = 0; i <= density-1; i++) {  
+    shufflers[i]= new Shuffler(i,new PVector(random(-width/2,width/2),random(-height/2, height/2)));
+    }	       
+   }
+	
+  void update(){
+    
+    float theta;
+    	
+    for (int i = 0; i <= density-1; i++) {  
+      
+      if (shufflers[i].coords.mag()>depth) { 
+          theta=random(TWO_PI); 
+	  shufflers[i].coords= new PVector(depth*cos(theta),depth*sin(theta));
+	  shufflers[i].setHeading(random(TWO_PI));      
+	       }
+	       
+      
+      
+      shufflers[i].move();	
+     }
+  }
+	 
+   void draw(){   
+      for (int i = 0; i <= density-1; i++) {  
+	  pushMatrix();
+	  translate(shufflers[i].coords.x,shufflers[i].coords.y);
+	  shufflers[i].draw();
+	  popMatrix();
+   }   
+   }
+	    	
+
+
+class Shuffler{
+
+ PVector coords;
+ int pop_index;
+ float heading;
+ PVector heading_vector;
+ float strain;
+ boolean isTensing;
+ boolean isRelaxing;
+ float sigma= footLength*4;
+ 
+ Shuffler(){}   
+
+ Shuffler(int i,PVector coords){   
+	this.pop_index=i;	
+	this.coords = coords;
+	  
+        setHeading(random(TWO_PI));	    
+        strain=random(footLength/2);
+	    
+        startTensing();
+ }
+
+
+
+  void startTensing(){
+          isTensing=true;
+          isRelaxing=false;
+   }
+	  
+  void startRelaxing(){
+          strain=footLength*3/4;
+          isRelaxing=true;
+          isTensing=false;
+   }  
+	  
+  void continueRelaxing(){    
+       strain-=rate;
+       if (strain<0) startTensing();
+   }
+
+
+  void continueTensing(){              
+       strain+=rate;
+       if (strain>footLength*3/4) startRelaxing();
+   }
+	  
+  void move(){
+    PVector s;
+    if (isTensing){ 
+         continueTensing(); 
+	if (ownSpeciesAvoid) avoidOwnSpecies();
+        if (obstaclesAvoid)  avoidObstacles();
+     }
+	 
+    if (isRelaxing) {      
+          continueRelaxing(); 
+          coords.add(PVector.mult(heading_vector,rate));
+    }
+  }
+
+
+   void avoidObstacles(){
+     
+     PVector s= PVector.sub(nearestObstacle().coords,this.coords);
+     if (s.mag()<2*sigma){
+	 float closest_approach=  s.cross(heading_vector).z;
+	 if (closest_approach <sigma&&closest_approach>0) turnRight(); 
+	 if (closest_approach <0&&closest_approach>-sigma) turnLeft();
+		 }
+   }
+	
+
+
+   void avoidOwnSpecies(){
+
+      PVector s= PVector.sub(nearestSameSpecies().coords,this.coords);
+      if (s.mag()<2*sigma){
+	float  delta=s.x*cos(heading)-s.y*sin(heading);
+	if (delta<0) turnLeft(); else turnRight();
+      }
+   }
+	
+
+   void turnRight(){	
+    	setHeading(heading-0.04);
+	}
+		 
+   void turnLeft(){			
+	setHeading(heading+0.04);
+}
+	
+
+
+   Shuffler nearestSameSpecies(){
+	
+       float d_nn=1e9; // nearest neighbour distance
+       Shuffler nearest=new Shuffler();
+		
+       for (int j = 0; j <= density-1; j++) {
+			
+		  if (j!=pop_index){ 	
+			 Shuffler neighbour=shufflers[j];
+			 float d = this.coords.dist(neighbour.coords); 
+			 if (d<d_nn)  {nearest=neighbour; d_nn=d;  } 
+		  }
+	}
+		
+	return nearest;
+		
+	}
+	
+
+
+    Obstacle nearestObstacle() {
+		
+		 float d,d_nn=1e9;
+		 Obstacle nearest= new Obstacle();  
+		 
+		 
+		       for (int k = 0; k <= obstacle_population.density-1; k++) {  
+		    
+			      Obstacle obstacle=obstacle_population.obstacles[k];
+			    
+			      d = this.coords.dist(obstacle.coords); 
+					 if (d<d_nn)  {nearest=obstacle; d_nn=d; } 
+       } 
+		     
+		 
+	   return nearest;   
+		
+   }
+	
+	
+	
+	
+   void setHeading(float new_heading){
+		  
+		  while (new_heading>PI) 
+			   new_heading=new_heading-TWO_PI;
+		  
+		  
+		  while (new_heading<-PI) new_heading=new_heading+TWO_PI;
+			
+		  
+		  heading = new_heading;
+		  heading_vector= new PVector(sin(heading),cos(heading));
+	
+		
+		   	}
+	
+		   
+
+   
+ void draw(){
+  rotate(PI-heading);
+  fill(255,100,100,200);
+  ellipse(0,-footLength-strain,footLength*2,footLength*2.5);  // the head
+  ellipse(0,0,footLength*2,footLength*2.5);  // the tail
+     }	 
+   
+
+
+
+ }
+
+ 
+  
+  
+  
+}
+  
+
